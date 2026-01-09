@@ -1,4 +1,3 @@
-
 export type SubmitLeadPayload = {
   name: string;
   email: string;
@@ -9,23 +8,22 @@ export type SubmitLeadPayload = {
 
 export type SubmitLeadResult =
   | { success: true }
-  | { success: false; error: string };
+  | { success: false; type: "network" | "server"; message: string };
 
 export async function submitLead(
   payload: SubmitLeadPayload
 ): Promise<SubmitLeadResult> {
   try {
-    // Simulate network delay
     await new Promise((res) => setTimeout(res, 1200));
 
-    console.log("Lead submitted:", payload);
+    console.log("Lead payload:", payload);
 
-    // Simulate success
     return { success: true };
   } catch {
     return {
       success: false,
-      error: "Submission failed",
+      type: "network",
+      message: "Connection issue. Please try again.",
     };
   }
 }

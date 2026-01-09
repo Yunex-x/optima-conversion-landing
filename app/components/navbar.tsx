@@ -16,7 +16,7 @@ export default function Navbar() {
 
 
             <div className="flex items-center gap-4">
-                <button className="bg-green-600 hover:bg-green-700 hover:scale-105 text-white font-semibold px-10 py-4 rounded-lg transition-all duration-200 shadow-xl shadow-green-600/30 hover:shadow-green-600/50" onClick={() => setIsOpen(true)}>
+                <button className="bg-green-600 hover:bg-green-700 hover:scale-105 text-white font-semibold px-2  py-3 text-xs md:text-xl md:py-4 rounded-lg transition-all duration-200 shadow-xl shadow-green-600/30 hover:shadow-green-600/50" onClick={() => setIsOpen(true)}>
                     Book a free call
                 </button>
             </div>

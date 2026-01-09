@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { submitLead } from "../lib/submitLead";
+import { validateLead } from "../lib/validateLead";
+
 
 type BookingModalProps = {
   isOpen: boolean;
@@ -13,6 +15,7 @@ export default function BookingModal({ isOpen, onClose }: BookingModalProps) {
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
   const [status, setStatus] = useState<Status>("idle");
+    const [error, setError] = useState("");
 
   // Lock body scroll
   useEffect(() => {
@@ -32,24 +35,40 @@ export default function BookingModal({ isOpen, onClose }: BookingModalProps) {
     onClose();
   }
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setStatus("loading");
+ async function handleSubmit(e: React.FormEvent) {
+  e.preventDefault();
 
-    const result = await submitLead({
-      name,
-      email,
-      message,
-      source: "book-call-modal",
-      page: "optima-landing",
-    });
+  const validationError = validateLead({
+    name,
+    email,
+    message,
+  });
 
-    if (result.success) {
-      setStatus("success");
-    } else {
-      setStatus("error");
-    }
+  if (validationError) {
+    setError(validationError);
+    setStatus("error");
+    return;
   }
+
+  setError("");
+  setStatus("loading");
+
+  const result = await submitLead({
+    name: name.trim(),
+    email: email.trim().toLowerCase(),
+    message,
+    source: "book-call-modal",
+    page: "optima-landing",
+  });
+
+  if (result.success) {
+    setStatus("success");
+  } else {
+    setError(result.message);
+    setStatus("error");
+  }
+}
+
 
   return (
     <div className="fixed inset-0 bg-black/70 flex justify-center items-center z-50 p-4">
@@ -70,6 +89,7 @@ export default function BookingModal({ isOpen, onClose }: BookingModalProps) {
             <p className="text-gray-300 mb-6">
               Thanks! We’ll contact you shortly.
             </p>
+
             <button
               onClick={handleClose}
               className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 rounded-lg"
@@ -113,10 +133,8 @@ export default function BookingModal({ isOpen, onClose }: BookingModalProps) {
                 className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-white resize-none"
               />
 
-              {status === "error" && (
-                <p className="text-red-400 text-sm">
-                  Something went wrong. Please try again.
-                </p>
+              {status === "error" && error && (
+                <p className="text-red-400 text-sm">{error}</p>
               )}
 
               <button
